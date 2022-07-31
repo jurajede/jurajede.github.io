@@ -137,20 +137,33 @@
 	</script>
 	<script type="text/javascript"charset="utf-8">
 
-	d3.tsv("data/data.tsv", function(data) {
+	function createTable(data) {
+		var container = d3
+			.select("#data-table")
+			.append("table")
+
+			.selectAll("tr")
+			.data(data).enter()
+			.append("tr")
+
+			.selectAll("td")
+				.data(function(d) { return d; }).enter()
+				.append("td")
+				.text(function(d) { return d; });
+	}
+
+	d3.tsv("/data/data.tsv", function(data) {
+
+		data = {
+			year: data.year,
+			month: data.month,
+			km: data.km,
+			days: data.days,
+		}
+
+		// parse data
 		console.log(data);
-		// var container = d3
-		// 	.select("body")
-		// 	.append("table")
 
-		// 	.selectAll("tr")
-		// 	.data(data).enter()
-		// 	.append("tr")
-
-		// 	.selectAll("td")
-		// 		.data(function(d) { return d; }).enter()
-		// 		.append("td")
-		// 		.text(function(d) { return d; });
 	});
 
 	</script>
