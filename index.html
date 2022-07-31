@@ -94,7 +94,9 @@
 				<h2 class="text-center">Data</h2>
 			</div>
 			<div class="row">
-				<div class="col-12" id="data-table">
+				<div class="col-12">
+					<table id="data-table">
+					</table>
 					<span>Tabulka s holými daty</span>
 				</div>
 				<br/><br/><br/>
@@ -140,10 +142,10 @@
 	function createTable(data) {
 		var container = d3
 			.select("#data-table")
-			.append("table")
+			//.append("table")
 
-			.selectAll("tr")
-			.data(data).enter()
+			//.selectAll("tr")
+			//.data(data).enter()
 			.append("tr")
 
 			.selectAll("td")
