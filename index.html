@@ -11,6 +11,13 @@
 		<!--<link rel="stylesheet" type="text/css" href="css/style.css" />-->
 
 		<script src="js/d3.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+		<script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.12.1/datatables.min.css"/>
+
+
+
+
 
 		<meta name="robots" content="noindex,follow">
 
@@ -94,16 +101,24 @@
 				<h2 class="text-center">Data</h2>
 			</div>
 			<div class="row">
-				<div class="col-12">
-					<table id="data-table">
+				<div class="col">
+					<table class="table table-hover table-sm" id="data-table">
+						<thead class="thead-dark">
+							<tr>
+								<th scope="col">Rok</th>
+								<th scope="col">Měsíc</th>
+								<th scope="col">Ujeté kilometry</th>
+								<th scope="col">Dní na kole</th>
+							</tr>
+						</thead>
+						<tbody id="data-table-body" class="text-left"></tbody>
 					</table>
-					<span>Tabulka s holými daty</span>
 				</div>
 				<br/><br/><br/>
 		  	</div>
 			<div class="row">
 				<div class="col-12">
-					<a href="/data/data.tsv" download="data.tsv">
+					<a href="data/data.tsv" download="data.tsv">
 						<button type="button" class="btn btn-primary">Stáhnout (.tsv)</button>
 					</a>
 				</div>
@@ -129,47 +144,78 @@
 			</div>
 		</div>
 	</body>
-	<script>
 
-	// (d3
-	// 	.select("body")
-	// 	.append("span")
-	// 	.text("Hello, world!"));
-
-	</script>
 	<script type="text/javascript"charset="utf-8">
 
-	function createTable(data) {
-		var container = d3
-			.select("#data-table")
-			//.append("table")
+	var tabulate = function (row, columns) {
+  		// var table = d3.select('table#data')
+		// var thead = table.append('thead')
+		var tbody = d3.select('#data-table-body')
+		var rows = tbody.append('tr')
 
-			//.selectAll("tr")
-			//.data(data).enter()
-			.append("tr")
+		console.log(rows)
 
-			.selectAll("td")
-				.data(function(d) { return d; }).enter()
-				.append("td")
-				.text(function(d) { return d; });
+		var items = rows.selectAll('td')
+			.data(columns.map(function(column) { return row[column]; }))
+			.enter()
+			.append('td')
+			.text(function (d) { return d; })
+
 	}
 
-	d3.tsv("/data/data.tsv", function(data) {
-
+	function processData(data) {
 		data = {
-			year: data.year,
-			month: data.month,
-			km: data.km,
-			days: data.days,
+			year: +data.year,
+			month: +data.month,
+			km: +data.km,
+			days: +data.days,
 		}
+		return data
+	}
 
-		// parse data
-		console.log(data);
+	$(document).ready(function () {
+        d3.tsv(
+			"https://raw.githubusercontent.com/jurajede/jurajede.github.io/main/data/data.tsv",
+			function(data) {
+				// process data
+				data = processData(data);
 
-		// create table view
-		createTable(data);
+				// use for creating table
+				tabulate(data, ['year', 'month', 'km', 'days'])
+			}
+		).then(function() {
+			$('#data-table').DataTable( {
+        		//responsive: true,
+        		"pageLength": 10,
+        		searching: false,
+        		//paging: false,
+        		//info: false
+				language: {
+        			processing:     "Zpracovávám",
+					search:         "Hledat&nbsp;:",
+        			lengthMenu:    	"_MENU_ položek na stránku",
+        			info:           "Zobrazuji položky _START_ až _END_ z celkových _TOTAL_",
+        			infoEmpty:      "Zobrazuji položky 0 až 0 z celkových 0",
+        			//infoFiltered:   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+        			infoPostFix:    "",
+        			loadingRecords: "Načítám...",
+        			zeroRecords:    "Žádné položky",
+        			emptyTable:     "Žádná data",
+        			paginate: {
+		            	first:      "První",
+        		    	previous:   "Předchozí",
+           			 	next:       "Následující",
+            			last:       "Poslední"
+        			},
+        			aria: {
+            			sortAscending:  "Seřadit vzestupně podle sloupce",
+            			sortDescending: "Seřadit sestupně podle sloupce"
+        			}
+    			}
+    		} );
+		})
+    });
 
-	});
 
 	</script>
 
