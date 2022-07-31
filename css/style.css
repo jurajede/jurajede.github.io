@@ -2,6 +2,11 @@
 	display:inline-block;
 }
 
+.card:hover {
+	color: #212529;
+    background-color: rgba(0,0,0,.075);
+}
+
 h2 {
 	text-align: center
 }

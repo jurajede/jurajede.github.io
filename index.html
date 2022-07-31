@@ -127,13 +127,21 @@
 				</div>
 				<br/><br/><br/>
 		  	</div>
-		  	<div class="row">
-				<hr/>
-			</div>
+
+			<hr class="border"/>
 
 			<div class="row">
-				<h2 class="text-center">Data</h2>
+				<div class="col text-center">
+					<h2>Data</h2>
+				</div>
 			</div>
+			<div class="row">
+				<div class="col-12">
+					<a href="data/data.tsv" download="data.tsv">
+						<button type="button" class="btn btn-primary">Stáhnout data (.tsv)</button>
+					</a>
+				</div>
+		  	</div>
 			<div class="row">
 				<div class="col">
 					<table class="table table-hover table-sm" id="data-table">
@@ -142,7 +150,7 @@
 								<th scope="col">#</th>
 								<th scope="col">Měsíc</th>
 								<th scope="col">Ujeté kilometry</th>
-								<th scope="col">Dní na kole</th>
+								<th scope="col">Aktivní dny</th>
 							</tr>
 						</thead>
 						<tbody id="data-table-body" class="text-left"></tbody>
@@ -150,16 +158,8 @@
 				</div>
 				<br/><br/><br/>
 		  	</div>
-			<div class="row">
-				<div class="col-12">
-					<a href="data/data.tsv" download="data.tsv">
-						<button type="button" class="btn btn-primary">Stáhnout (.tsv)</button>
-					</a>
-				</div>
-		  	</div>
-			<div class="row">
-				<hr/>
-			</div>
+
+			<hr class="border"/>
 
 		</div>
 		<div class="footer">
