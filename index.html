@@ -10,6 +10,8 @@
 		<link rel="stylesheet" type="text/css" href="css/bootstrap3.css">
 		<!--<link rel="stylesheet" type="text/css" href="css/style.css" />-->
 
+		<script src="js/d3.min.js"></script>
+
 		<meta name="robots" content="noindex,follow">
 
 		<title>Jura Jede</title>
@@ -92,14 +94,16 @@
 				<h2 class="text-center">Data</h2>
 			</div>
 			<div class="row">
-				<div class="col-12">
+				<div class="col-12" id="data-table">
 					Tabulka s holými daty
 				</div>
 				<br/><br/><br/>
 		  	</div>
 			<div class="row">
 				<div class="col-12">
-					<button type="button" class="btn btn-primary">Stáhnout (.tsv)</button>
+					<a href="/data/data.tsv" download="data.tsv">
+						<button type="button" class="btn btn-primary">Stáhnout (.tsv)</button>
+					</a>
 				</div>
 		  	</div>
 			<div class="row">
@@ -123,4 +127,32 @@
 			</div>
 		</div>
 	</body>
+	<script>
+
+	// (d3
+	// 	.select("body")
+	// 	.append("span")
+	// 	.text("Hello, world!"));
+
+	</script>
+	<script type="text/javascript"charset="utf-8">
+
+	d3.tsv("data/data.tsv", function(data) {
+		console.log(data);
+		// var container = d3
+		// 	.select("body")
+		// 	.append("table")
+
+		// 	.selectAll("tr")
+		// 	.data(data).enter()
+		// 	.append("tr")
+
+		// 	.selectAll("td")
+		// 		.data(function(d) { return d; }).enter()
+		// 		.append("td")
+		// 		.text(function(d) { return d; });
+	});
+
+	</script>
+
 </html>
