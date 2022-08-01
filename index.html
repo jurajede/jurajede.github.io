@@ -17,6 +17,11 @@
 		<!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script> -->
 		<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
 		<script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+
+		<script src="js/dates.js"></script>
+		<script src="js/graphics.js"></script>
 		<script src="js/main.js"></script>
 
 
@@ -26,6 +31,9 @@
 		<meta name="robots" content="noindex,follow">
 
 		<title>Jura Jede</title>
+		<script>
+			var data = null; // global data
+		</script>
 	</head>
 	<body class="container-fluid p-3">
 		<div class="container text-center">
@@ -43,43 +51,43 @@
 			<hr class="border"/>
 
 			<div class="row">
-				<div class="col text-center">
+				<div class="col text-center mb-4">
 					<h2>Celkem</h2>
+					Celkově od roku 1992
 				</div>
 			</div>
 			<div class="row justify-content-center">
 				<div class="col-auto mb-4">
-					<div class="card" style="width: 18rem;">
+					<div class="card" style="width: 18rem;" data-toggle="tooltip" data-placement="bottom" title="Celková ujetá vzdálenost v kilometrech">
 						<div class="card-body">
 							<h5 class="card-title">Vzdálenost</h5>
-							<p class="card-text"><span class="sum-distance-km">150000</span> km</p>
+							<p class="card-text"><span class="sum-distance-km"></span></p>
 						</div>
 					</div>
 				</div>
 				<div class="col-auto mb-4">
-					<div class="card" style="width: 18rem;">
+					<div class="card" style="width: 18rem;" data-toggle="tooltip" data-placement="bottom" data-html="true" title="Počet dokola obkroužených rovníků<sup>1</sup>">
 						<div class="card-body">
 							<h5 class="card-title">Kolem rovníku</h5>
-							<p class="card-text"><span class="sum-distance-equators">9.1357</span>&#215;</p>
+							<p class="card-text"><span class="sum-distance-equators"></span></p>
 						</div>
 					</div>
 				</div>
 				<div class="col-auto mb-4">
-					<div class="card" style="width: 18rem;">
+					<div class="card" style="width: 18rem;" data-toggle="tooltip" data-placement="bottom" title="Celkový počet aktivních dní, kdy Jura sedl na kolo">
 						<div class="card-body">
 							<h5 class="card-title">Aktivních dní</h5>
-							<p class="card-text"><span class="sum-active-days">1567</span></p>
+							<p class="card-text"><span class="sum-active-days"></span></p>
 						</div>
 					</div>
 				</div>
 			</div>
 
 			<div class="row">
-				<div class="col-12">
-					Traceplot kilometry od roku 1992
+				<div class="col-12 mb-4">
+					<div id="traceplot-km"></div>
 			  	</div>
 			</div>
-			<br/><br/><br/>
 			<div class="row">
 				<div class="col-12">
 					Heatmap kilometry od roku 1992
@@ -89,61 +97,55 @@
 			<hr class="border"/>
 
 			<div class="row">
-				<div class="col text-center">
-					<h2>Zatím v tomto roce</h2>
+				<div class="col text-center mb-4">
+					<h2>Od začátku tohoto roku</h2>
+
+					Vůči <i>pětiletému klouzavému průměru</i><sup>2</sup>.
 				</div>
 			</div>
 
 			<div class="row justify-content-center">
 				<div class="col-auto mb-4">
-					<div class="card" style="width: 18rem;">
+					<div class="card" style="width: 18rem;" data-toggle="tooltip" data-placement="bottom" title="Celková ujetá vzdálenost (od začátku roku)">
 						<div class="card-body">
 							<h5 class="card-title">Vzdálenost</h5>
-							<p class="card-text"><span class="year-distance-km">10000</span> km (^ 2%)</p>
+							<p class="card-text"><span class="year-distance-km"></span> (v 1.2%)</p>
 						</div>
 					</div>
 				</div>
 				<div class="col-auto mb-4">
-					<div class="card" style="width: 18rem;">
+					<div class="card" style="width: 18rem;" data-toggle="tooltip" data-placement="bottom" title="Průměrná denní vzdálenost (od začátku roku)">
 						<div class="card-body">
 							<h5 class="card-title">Denní průměr</h5>
-							<p class="card-text">78km (v 1.2%)</p>
+							<p class="card-text"><span class="year-daily-mean"></span> (v 1.2%)</p>
 						</div>
 					</div>
 				</div>
 				<div class="col-auto mb-4">
-					<div class="card" style="width: 18rem;">
+					<div class="card" style="width: 18rem;" data-toggle="tooltip" data-placement="bottom" title="Počet dní, kdy Jura sedl na kolo (od začátku roku)">
 						<div class="card-body">
 							<h5 class="card-title">Aktivní dny</h5>
-							<p class="card-text"><span class="year-active-days">255</span> (^ 1%)</p>
+							<p class="card-text"><span class="year-active-days"></span> (^ 1%)</p>
 						</div>
 					</div>
 				</div>
 			</div>
 
 		  	<div class="row">
-				<div class="col-12">
+				<div class="col-12 mb-4">
 					Traceplot tento rok vs. 5 posledních let (s 95% CI)
 				</div>
-				<br/><br/><br/>
 		  	</div>
 
 			<hr class="border"/>
 
 			<div class="row">
-				<div class="col text-center">
+				<div class="col text-center mb-4">
 					<h2>Data</h2>
 				</div>
 			</div>
 			<div class="row">
-				<div class="col-12">
-					<a href="data/data.tsv" download="data.tsv">
-						<button type="button" class="btn btn-primary">Stáhnout data (.tsv)</button>
-					</a>
-				</div>
-		  	</div>
-			<div class="row">
-				<div class="col">
+				<div class="col mb-4">
 					<table class="table table-hover table-sm" id="data-table">
 						<thead class="thead-dark">
 							<tr>
@@ -156,7 +158,13 @@
 						<tbody id="data-table-body" class="text-left"></tbody>
 					</table>
 				</div>
-				<br/><br/><br/>
+		  	</div>
+			<div class="row">
+				<div class="col-12 mb-4">
+					<a href="data/data.tsv" download="data.tsv">
+						<button type="button" class="btn btn-success">Stáhnout data (.tsv)</button>
+					</a>
+				</div>
 		  	</div>
 
 			<hr class="border"/>
@@ -164,17 +172,22 @@
 		</div>
 		<div class="footer">
 			<div class="container text-center">
+
 				<div class="row">
-					<div class="col-md-12">
-						Poslední data: <span class="last-data">Červenec 2022</span>
+					<div class="col text-left mb-4">
+						<h4>Poznámky</h4>
+						<sup>1</sup>Obvod rovníku je 40075 km.<br/>
+						<sup>2</sup>Klouzavý průměr je průměr hodnot za předchozí časové období od daného okamžiku. Používá se jako indikátor změny.
 					</div>
 				</div>
+
 				<div class="row">
-					<div class="col">
-						Design: Martin Beneš, 2022
+					<div class="col-md-12 mb-4">
+						<b>Poslední data:</b> <span class="last-data">Červenec 2022</span><br/>
+						<b>Design:</b> Martin Beneš, 2022
 					</div>
-					<br/><br/>
 				</div>
+
 			</div>
 		</div>
 	</body>
@@ -183,50 +196,22 @@
 
 
 	$(document).ready(function () {
+		// bootstrap
+		$('[data-toggle="tooltip"]').tooltip();
+
+		// load data
         d3.tsv(
 			"https://raw.githubusercontent.com/jurajede/jurajede.github.io/main/data/data.tsv",
-			function(data, id) {
-				data.id = id + 1;
+			function(row, id) {
+				row.id = id + 1;
 				// process data
-				data = processData(data);
+				row = processRow(row)
 
 				// use for creating table
-				tabulate(data, ['month_cz_year', 'km', 'days'])
-				return data
+				tabulate(row, ['month_cz_year', 'km', 'days'])
+				return row
 			},
-		).then(function(data) {
-			$('#data-table').DataTable( {
-        		//responsive: true,
-        		"pageLength": 10,
-        		searching: false,
-        		//paging: false,
-        		//info: false
-				language: {
-        			processing:     "Zpracovávám",
-					search:         "Hledat&nbsp;:",
-        			lengthMenu:    	"_MENU_ položek na stránku",
-        			info:           "Zobrazuji položky _START_ až _END_ z celkových _TOTAL_",
-        			infoEmpty:      "Zobrazuji položky 0 až 0 z celkových 0",
-        			//infoFiltered:   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
-        			infoPostFix:    "",
-        			loadingRecords: "Načítám...",
-        			zeroRecords:    "Žádné položky",
-        			emptyTable:     "Žádná data",
-        			paginate: {
-		            	first:      "První",
-        		    	previous:   "Předchozí",
-           			 	next:       "Následující",
-            			last:       "Poslední"
-        			},
-        			aria: {
-            			sortAscending:  "Seřadit vzestupně podle sloupce",
-            			sortDescending: "Seřadit sestupně podle sloupce"
-        			}
-    			}
-			});
-			updateIndicators(data)
-			updateLastData(data)
-		})
+		).then(updateData)
     });
 
 

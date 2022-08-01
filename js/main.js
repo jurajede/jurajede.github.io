@@ -32,21 +32,22 @@ const MONTHS_CZ = {
 	12: "Prosinec",
 }
 
-function processData(data) {
-	data = {
-		id: data.id,
-		year: +data.year,
-		month: +data.month,
-		km: +data.km,
-		days: +data.days,
+function processRow(row) {
+	row = {
+		id: row.id,
+		year: +row.year,
+		month: +row.month,
+		km: +row.km,
+		days: +row.days,
 	}
-	data.month_cz = MONTHS_CZ[data.month]
-	data.month_cz_year = data.month_cz + " " + data.year
+	row.month_cz = MONTHS_CZ[row.month]
+	row.month_cz_year = row.month_cz + " " + row.year
+	row.month_days = getDaysInMonth(row.year, row.month)
 
-	return data
+	return row
 }
 
-function updateIndicators(data) {
+function updateIndicators(data, window) {
 	// sum distance
 	let sum_distance = d3.sum(data.map((d) => d['km']))
 	let sum_days = d3.sum(data.map((d) => d['days']))
@@ -56,12 +57,13 @@ function updateIndicators(data) {
 	let sum_active_days = (sum_days).toString()
 	// set sum distance
 	d3.selectAll('.sum-distance-km')
-		.text(sum_distance_km)
+		.text(sum_distance_km + " km")
 	d3.selectAll('.sum-distance-equators')
-		.text(sum_distance_eq)
+		.text(sum_distance_eq + "\u00D7")//"&#215;")
 	d3.selectAll('.sum-active-days')
 		.text(sum_active_days)
 
+	// last year
 	let sum_distance_year = data.reduce(
 		(acc, item) => (item.year == last_row.year) ? acc+item.km : acc,
 		0
@@ -70,17 +72,60 @@ function updateIndicators(data) {
 		(acc, item) => (item.year == last_row.year) ? acc+item.days : acc,
 		0
 	)
+	let year_days = data.reduce(
+		(acc, item) => (item.year == last_row.year) ? acc+item.month_days : acc,
+		0
+	)
+	let year_daily_mean = (sum_distance_year / year_days).toFixed(1)
 	d3.selectAll('.year-distance-km')
-		.text(sum_distance_year)
+		.text(sum_distance_year + " km")
+	d3.selectAll('.year-daily-mean')
+		.text(year_daily_mean + " km/den")
 	d3.selectAll('.year-active-days')
 		.text(year_active_days)
+
+	// 5-year moving average
+
 }
 
-function updateLastData(data) {
-	// console.log("last data")
-	// console.log(data[data.length-1])
-	let last_data = data[data.length-1]
-
+updateLastData = (data) => {
 	d3.select('.last-data')
-		.text(last_data.month_cz_year)
+		.text(data[data.length-1].month_cz_year)
+}
+
+
+updateData = (rows) => {
+	data = rows
+	$('#data-table').DataTable( {
+		//responsive: true,
+		"pageLength": 10,
+		searching: false,
+		//paging: false,
+		//info: false
+		language: {
+			processing:     "Zpracovávám",
+			search:         "Hledat&nbsp;:",
+			lengthMenu:    	"_MENU_ položek na stránku",
+			info:           "Zobrazuji položky _START_ až _END_ z celkových _TOTAL_",
+			infoEmpty:      "Zobrazuji položky 0 až 0 z celkových 0",
+			//infoFiltered:   "(filtr&eacute; de _MAX_ &eacute;l&eacute;ments au total)",
+			infoPostFix:    "",
+			loadingRecords: "Načítám...",
+			zeroRecords:    "Žádné položky",
+			emptyTable:     "Žádná data",
+			paginate: {
+				first:      "První",
+				previous:   "Předchozí",
+					next:       "Následující",
+				last:       "Poslední"
+			},
+			aria: {
+				sortAscending:  "Seřadit vzestupně podle sloupce",
+				sortDescending: "Seřadit sestupně podle sloupce"
+			}
+		}
+	});
+	updateIndicators(rows)
+	updateTraceplotKm(rows)
+	updateLastData(rows)
 }
