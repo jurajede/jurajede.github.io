@@ -52,7 +52,7 @@
 					<div class="card" style="width: 18rem;">
 						<div class="card-body">
 							<h5 class="card-title">Vzdálenost</h5>
-							<p class="card-text">150000km</p>
+							<p class="card-text"><span class="sum-distance-km">150000</span> km</p>
 						</div>
 					</div>
 				</div>
@@ -60,7 +60,7 @@
 					<div class="card" style="width: 18rem;">
 						<div class="card-body">
 							<h5 class="card-title">Kolem rovníku</h5>
-							<p class="card-text">9.1357x</p>
+							<p class="card-text"><span class="sum-distance-equators">9.1357</span>&#215;</p>
 						</div>
 					</div>
 				</div>
@@ -68,7 +68,7 @@
 					<div class="card" style="width: 18rem;">
 						<div class="card-body">
 							<h5 class="card-title">Aktivních dní</h5>
-							<p class="card-text">1567</p>
+							<p class="card-text"><span class="sum-active-days">1567</span></p>
 						</div>
 					</div>
 				</div>
@@ -99,7 +99,7 @@
 					<div class="card" style="width: 18rem;">
 						<div class="card-body">
 							<h5 class="card-title">Vzdálenost</h5>
-							<p class="card-text">10000km (^ 2%)</p>
+							<p class="card-text"><span class="year-distance-km">10000</span> km (^ 2%)</p>
 						</div>
 					</div>
 				</div>
@@ -115,7 +115,7 @@
 					<div class="card" style="width: 18rem;">
 						<div class="card-body">
 							<h5 class="card-title">Aktivní dny</h5>
-							<p class="card-text">255 (^ 1%)</p>
+							<p class="card-text"><span class="year-active-days">255</span> (^ 1%)</p>
 						</div>
 					</div>
 				</div>
@@ -224,6 +224,7 @@
         			}
     			}
 			});
+			updateIndicators(data)
 			updateLastData(data)
 		})
     });

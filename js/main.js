@@ -46,6 +46,36 @@ function processData(data) {
 	return data
 }
 
+function updateIndicators(data) {
+	// sum distance
+	let sum_distance = d3.sum(data.map((d) => d['km']))
+	let sum_days = d3.sum(data.map((d) => d['days']))
+	let last_row = data[data.length-1]
+	let sum_distance_km = sum_distance.toFixed(1)
+	let sum_distance_eq = (sum_distance / 40075).toFixed(5)
+	let sum_active_days = (sum_days).toString()
+	// set sum distance
+	d3.selectAll('.sum-distance-km')
+		.text(sum_distance_km)
+	d3.selectAll('.sum-distance-equators')
+		.text(sum_distance_eq)
+	d3.selectAll('.sum-active-days')
+		.text(sum_active_days)
+
+	let sum_distance_year = data.reduce(
+		(acc, item) => (item.year == last_row.year) ? acc+item.km : acc,
+		0
+	)
+	let year_active_days = data.reduce(
+		(acc, item) => (item.year == last_row.year) ? acc+item.days : acc,
+		0
+	)
+	d3.selectAll('.year-distance-km')
+		.text(sum_distance_year)
+	d3.selectAll('.year-active-days')
+		.text(year_active_days)
+}
+
 function updateLastData(data) {
 	// console.log("last data")
 	// console.log(data[data.length-1])
