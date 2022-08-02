@@ -1,7 +1,8 @@
 
-var tabulate = function (row, columns) {
-	let table = d3.select('div#data-table')
+var updateTable = function (rows, columns) {
+	let table = d3.select('div#data-table-block')
 		.append("table")
+		.attr("id", "data-table")
 		.attr("class", "table table-hover table-sm")
 	// header
 	let header = table.append("thead")
@@ -20,19 +21,22 @@ var tabulate = function (row, columns) {
 		.attr("scope", "col")
 		.text("Aktivní dny")
 
-	// // body
-	// let tbody = table.append("tbody")
-	// 	.attr("id", "data-table-body")
-	// 	.attr("class", "text-left")
-	// let rows = tbody.append('tr')
-	// rows.append('th')
-	// 	.attr('scope', 'row')
-	// 	.text(row.id)
-	// rows.selectAll('td')
-	// 	.data(columns.map(function(column) { return row[column]; }))
-	// 	.enter()
-	// 	.append('td')
-	// 	.text(function (d) { return d; })
+	// body
+	let tbody = table.append("tbody")
+		.attr("id", "data-table-body")
+		.attr("class", "text-left")
+	let trs = tbody.selectAll('tr')
+		.data(rows)
+		.enter()
+		.append('tr')
+	trs.append('th')
+		.attr('scope', 'row')
+		.text(d => d.id)
+	trs.selectAll('td')
+		.data(row => columns.map(col => row[col]))
+		.enter()
+		.append('td')
+		.text(d => d)
 
 }
 
@@ -164,7 +168,10 @@ updateLastData = (data) => {
 
 updateData = (rows) => {
 	data = rows
-	$('#data-table').DataTable( {
+
+	// table
+	updateTable(rows, ['month_cz_year', 'km', 'days'])
+	$('table#data-table').DataTable( {
 		//responsive: true,
 		"pageLength": 10,
 		searching: false,
@@ -193,6 +200,7 @@ updateData = (rows) => {
 			}
 		}
 	});
+
 	updateIndicators(rows)
 	updateTraceplotKm(rows)
 	updateLastData(rows)

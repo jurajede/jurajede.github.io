@@ -158,7 +158,7 @@
 				</div>
 			</div>
 			<div class="row">
-				<div class="col mb-4" id="data-table">
+				<div class="col mb-4" id="data-table-block">
 				</div>
 		  	</div>
 			<div class="row">
@@ -216,7 +216,7 @@
 			document.getElementById("traceplot-km")
 		);
 		var spinner_table = new Spinner(opts).spin(
-			document.getElementById("data-table")
+			document.getElementById("data-table-block")
 		);
 
 		// load data
@@ -226,9 +226,6 @@
 				row.id = id + 1;
 				// process data
 				row = processRow(row)
-
-				// use for creating table
-				tabulate(row, ['month_cz_year', 'km', 'days'])
 				return row
 			},
 		).then((rows) => {

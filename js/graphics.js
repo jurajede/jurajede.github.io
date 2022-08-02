@@ -6,7 +6,7 @@ updateTraceplotKm = (rows) => {
 	var margin = {top: 20, right: 40, bottom: 40, left: 60},
 	width = parseInt(d3.select("div#traceplot-km").style("width")) - margin.left - margin.right,
 	height = parseInt(d3.select("div#traceplot-km").style("height")) - margin.top - margin.bottom;
-	console.log("traceplot-km " + height + "x" + width)
+	//console.log("traceplot-km " + height + "x" + width)
 	// Define svg canvas
 	var svg = d3.select("#traceplot-km")
 		.append("svg")
