@@ -2,21 +2,21 @@
 
 
 updateTraceplotKm = (rows) => {
+	var plotDiv = d3.select("#traceplot-km")
 	// Define margins
 	var margin = {top: 20, right: 40, bottom: 40, left: 60},
-	width = parseInt(d3.select("div#traceplot-km").style("width")) - margin.left - margin.right,
-	height = parseInt(d3.select("div#traceplot-km").style("height")) - margin.top - margin.bottom;
+	width = parseInt(plotDiv.style("width")) - margin.left - margin.right,
+	height = parseInt(plotDiv.style("height")) - margin.top - margin.bottom;
 	//console.log("traceplot-km " + height + "x" + width)
 	// Define svg canvas
-	var svg = d3.select("#traceplot-km")
-		.append("svg")
+	var svg = plotDiv.append("svg")
         	.attr("width", width + margin.left + margin.right)
         	.attr("height", height + margin.top + margin.bottom)
         .append("g")
         	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 	// Parse data
-	rows = rows.map((row) => {
+	rows = rows.map(row => {
 		row.date = d3.timeParse("%Y-%m")(String(row.year)+"-"+row.month)
 		return row
 	})
@@ -32,7 +32,7 @@ updateTraceplotKm = (rows) => {
     	.call(xAxis);
 
 	// Add Y axis
-	var maxKm = d3.max(rows, (d) => d.km)
+	var maxKm = d3.max(rows, d => d.km)
     var yScale = (d3.scaleLinear()
     	.domain([0, maxKm])
     	.range([ height, 0 ]));
@@ -117,8 +117,8 @@ updateTraceplotKm = (rows) => {
 
 	// Define responsive behavior
 	function resize() {
-		var width = parseInt(d3.select("#traceplot-km").style("width")) - margin.left - margin.right,
-		height = parseInt(d3.select("#traceplot-km").style("height")) - margin.top - margin.bottom;
+		var width = parseInt(plotDiv.style("width")) - margin.left - margin.right,
+		height = parseInt(plotDiv.style("height")) - margin.top - margin.bottom;
 
 		// Update the scales
 		xScale.range([ 0, width ])
@@ -144,7 +144,7 @@ updateTraceplotKm = (rows) => {
 		focusText.style("opacity",1)
 		yearText.style("opacity",1)
 	}
-	function mousemove(event) {
+	function mousemove (event) {
 		// recover coordinate we need
 		let x0 = xScale.invert(d3.pointer(event, g.node())[0]);
 		let i = bisect(rows, x0, 1);
@@ -161,7 +161,7 @@ updateTraceplotKm = (rows) => {
 			.attr("x", 12)
 			.attr("y", yScale(maxKm-200))
 	}
-	function mouseout() {
+	function mouseout () {
 		focus.style("opacity", 0)
 		focusText.style("opacity", 0)
 		yearText.style("opacity", 0)
@@ -173,74 +173,204 @@ updateTraceplotKm = (rows) => {
 	// Call the resize function
 	resize();
 
+}
 
-	// // Set the domain of the axes
-	// xScale.domain(d3.extent(rows, d => d.date))
-	// yScale.domain([0, d3.max(rows, d => d.km)])
+updateTraceplotYearly = (rows) => {
+	var plotDiv = d3.select("#traceplot-yearly")
+	// Define margins
+	var margin = {top: 20, right: 40, bottom: 40, left: 60},
+	width = parseInt(plotDiv.style("width")) - margin.left - margin.right,
+	height = parseInt(plotDiv.style("height")) - margin.top - margin.bottom;
 
-	// // Place the axes on the chart
-	// svg.append("g")
-	// 	.attr("class", "x axis")
-	// 	.attr("transform", "translate(0," + height + ")")
-	// 	.call(xAxis);
+	// Define svg canvas
+	var svg = plotDiv.append("svg")
+        	.attr("width", width + margin.left + margin.right)
+        	.attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-	// svg.append("g")
-	// 		.attr("class", "y axis")
-	// 		.call(yAxis)
-	// 	.append("text")
-	// 		.attr("class", "label")
-	// 		.attr("y", 6)
-	// 		.attr("dy", ".71em")
-	// 		.attr("dx", ".71em")
-	// 		.style("text-anchor", "beginning")
-	// 		.text("Kilometers");
+	// Parse data
+	rows = rows.map(row => {
+		row.date = d3.timeParse("%Y-%m")(String(row.year)+"-"+row.month)
+		return row
+	})
+	let last_row = rows[rows.length-1]
+	let rows_year = rows.filter(row => row.year == last_row.year)
+	let last_5 = data.filter(
+		d => (d.year >= last_row.year-5) && (d.year < last_row.year)
+	)
+	let last_5_months = d3.group(last_5, d => d.month)
+	let mean_ma5y = d3.map(last_5_months, (d, i) => {
+		return {month: i, km: d3.reduce(d[1], (acc, item) => acc + item.km, 0) / 5}
+	})
 
-	// var products = svg.selectAll(".category")
-	// 	.data(rows)
-	// 	.enter().append("g")
-	// 	.attr("class", "category");
+	// Add X axis --> it is a date format
+    var xScale = d3.scaleLinear()
+    	.domain([1,12])
+	var xAxis = d3.axisBottom(xScale)
+		.ticks(12)
+		.tickFormat(d => MONTHS_CZ[d])
+    svg.append("g")
+		.attr("class", "x axis")
+    	.attr("transform", "translate(0," + height + ")")
+    	.call(xAxis);
 
-	// products.append("path")
-	// 	.attr("class", "line")
-	// 	.attr("d", function(d) {return line(d.datapoints); })
-	// 	.style("stroke", function(d) {return color(d.category); });
+	// Add Y axis
+	var maxKm = d3.max(rows, d => d.km)
+    var yScale = (d3.scaleLinear()
+    	.domain([0, maxKm])
+    	.range([ height, 0 ]))
+	var yAxis = d3.axisLeft(yScale);
 
+	// Axes labels
+    svg.append("g")
+		.attr("class", "y axis")
+		.call(yAxis)
+	var xlabel = svg.append('g')
+		.attr('transform', 'translate(' + xScale(6) + ', ' + yScale(-400) + ')')
+	xlabel.append("text")
+		.style("text-anchor", "middle")
+		.style("font", "11px arial")
+		.text("Měsíc")
+	var ylabel = svg.append('g')
+		.attr('transform', 'translate(' + -40 + ', ' + yScale(1500) + ')')
+	ylabel.append("text")
+		.style("text-anchor", "middle")
+		.attr("transform", "rotate(-90)")
+		.style("font", "11px arial")
+		.text("Ujeté kilometry")
 
+	function redrawLines () {
+		// Force D3 to recalculate and update the line
+		svg.selectAll('.line')
+			.attr("d",
+				d3.line()
+					.x(d => xScale(d.month))
+					.y(d => yScale(d.km))
+			)
+		svg.selectAll('.ma')
+			.attr("d",
+				d3.line()
+					.x(d => xScale(d.month))
+					.y(d => yScale(d.km))
+			)
+		xAxis.ticks(Math.max(width/75, 2))
+		yAxis.ticks(Math.max(height/50, 2))
+	}
 
+	// Add the line
+	svg.append("path")
+		.attr("class", "line")
+    	.datum(rows_year)
+    	.attr("fill", "none")
+    	.attr("stroke", "steelblue")
+    	.attr("stroke-width", 1.5)
+	svg.append("ma")
+		.attr("class", "line")
+    	.datum(mean_ma5y)
+    	.attr("fill", "none")
+    	.attr("stroke", "steelblue")
+    	.attr("stroke-width", 1.5)
 
+	redrawLines()
 
+	// This allows to find the closest X index of the mouse:
+	var bisect = (data, xp) => {
+		let month_int = Math.round(xp)
+		if (month_int < 1) month_int = 1
+		else if(month_int > data.length) month_int = data.length
+		return month_int - 1
+	}
+	// Create the circle that travels along the curve of chart
+	var focus = svg.append('g')
+		.append('circle')
+			.style("fill", "steelblue")
+			.attr("stroke", "none")
+			.attr('r', 6)
+			.style("opacity", 0)
+	// Create the text that travels along the curve of chart
+	var focusText = svg.append('g')
+		.append('text')
+			.style("opacity", 0)
+			.attr("text-anchor", "top")
+			.attr("alignment-baseline", "center")
+	// Create the text that stays on the top
+	var yearText = svg.append('g')
+		.append('text')
+			.style("opacity", 0)
+			.attr("text-anchor", "top")
+			.attr("alignment-baseline", "center")
 
+	var rect = svg.append('rect')
+		.style("fill", "none")
+		.style("pointer-events", "all")
+		.attr('width', width)
+		.attr('height', height)
+		.on('mouseover', mouseover)
+		.on('mousemove', mousemove)
+		.on('mouseout', mouseout);
+	var g = svg.append("g");
 
+	// Define responsive behavior
+	function resize() {
+		var width = parseInt(plotDiv.style("width")) - margin.left - margin.right,
+		height = parseInt(plotDiv.style("height")) - margin.top - margin.bottom;
 
+		// Update the scales
+		xScale.range([ 0, width ])
+		yScale.range([ height, 0 ])
 
+		// Update the axes
+		svg.select('.x.axis')
+			.attr("transform", "translate(0," + height + ")")
+			.call(xAxis);
+		svg.select('.y.axis')
+			.call(yAxis);
 
+		xlabel.attr('transform', 'translate(' + xScale(6) + ', ' + yScale(-400) + ')')
 
+		// redraw line
+		redrawLines()
 
+	};
 
+	// What happens when the mouse move -> show the annotations at the right positions.
+	function mouseover () {
+		focus.style("opacity", 1)
+		focusText.style("opacity",1)
+		yearText.style("opacity",1)
+	}
+	function mousemove (event) {
+		// recover coordinate we need
+		let x0 = xScale.invert(d3.pointer(event, g.node())[0]);
+		let i = bisect(rows_year, x0);
+		selectedData = rows_year[i]
+		focus
+			.attr("cx", xScale(selectedData.month))
+			.attr("cy", yScale(selectedData.km))
+		focusText
+			.html(selectedData.km.toFixed(0))
+			.attr("x", xScale(selectedData.month) + 5)
+			.attr("y", yScale(selectedData.km))
+		yearText
+			.html(selectedData.month_cz)
+			.attr("x", 12)
+			.attr("y", yScale(maxKm-200))
+	}
+	function mouseout () {
+		focus.style("opacity", 0)
+		focusText.style("opacity", 0)
+		yearText.style("opacity", 0)
+	}
 
+	// Call the resize function whenever a resize event occurs
+	d3.select(window).on('resize', resize);
 
-
-	// let svg = d3.select("div#traceplot-km")
-	// 	.append("div")
-   	// 	.classed("svg-container", true)
-	// 	.append("svg")
-	// 		.attr("preserveAspectRatio", "xMinYMin meet")
-	// 		.attr("viewBox", "0 0 400 600")
-	// 		.classed("svg-content-responsive", true)
-    // 		//.attr("width", width + margin.left + margin.right)
-    // 		//.attr("height", height + margin.top + margin.bottom)
-	// 	.append("g")
-	// 		.attr("transform",
-	// 			  "translate(" + margin.left + "," + margin.top + ")");
-
-
-
-
-
-
-
+	// Call the resize function
+	resize();
 
 }
+
 
 
 

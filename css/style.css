@@ -11,7 +11,7 @@ h2 {
 	text-align: center
 }
 
-#traceplot-km {
+.plotDiv {
 	width: 100%;
 	height: 20em;
 }

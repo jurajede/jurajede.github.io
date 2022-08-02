@@ -1,5 +1,5 @@
 
-var updateTable = function (rows, columns) {
+updateTable = (rows, columns) => {
 	let table = d3.select('div#data-table-block')
 		.append("table")
 		.attr("id", "data-table")
@@ -40,22 +40,7 @@ var updateTable = function (rows, columns) {
 
 }
 
-const MONTHS_CZ = {
-	1: "Leden",
-	2: "Únor",
-	3: "Březen",
-	4: "Duben",
-	5: "Květen",
-	6: "Červen",
-	7: "Červenec",
-	8: "Srpen",
-	9: "Září",
-	10: "Říjen",
-	11: "Listopad",
-	12: "Prosinec",
-}
-
-function processRow(row) {
+processRow = (row) => {
 	row = {
 		id: row.id,
 		year: +row.year,
@@ -70,10 +55,10 @@ function processRow(row) {
 	return row
 }
 
-function updateIndicators(data, window) {
+updateIndicators = (data, window) => {
 	// sum distance
-	let sum_distance = d3.sum(data.map((d) => d['km']))
-	let sum_days = d3.sum(data.map((d) => d['days']))
+	let sum_distance = d3.sum(data.map(d => d['km']))
+	let sum_days = d3.sum(data.map(d => d['days']))
 	let sum_distance_km = sum_distance.toFixed(1)
 	let sum_distance_eq = (sum_distance / 40075).toFixed(5)
 	let sum_active_days = (sum_days).toString()
@@ -203,5 +188,6 @@ updateData = (rows) => {
 
 	updateIndicators(rows)
 	updateTraceplotKm(rows)
+	updateTraceplotYearly(rows)
 	updateLastData(rows)
 }
