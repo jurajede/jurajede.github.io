@@ -200,8 +200,21 @@ updateTraceplotYearly = (rows) => {
 		d => (d.year >= last_row.year-5) && (d.year < last_row.year)
 	)
 	let last_5_months = d3.group(last_5, d => d.month)
-	let mean_ma5y = d3.map(last_5_months, (d, i) => {
-		return {month: i, km: d3.reduce(d[1], (acc, item) => acc + item.km, 0) / 5}
+	// let mean_ma5y = d3.map(last_5_months, (d, i) => {
+	// 	return {month: i+1, km: d3.reduce(d[1], (acc, item) => acc + item.km, 0) / 5}
+	// })
+	let ci_ma5y = d3.map(last_5_months, (d, i) => {
+		let km_mean = d3.mean(d3.map(d[1], item => item.km))
+		let km_sd = d3.deviation(d3.map(d[1], item => item.km))
+		let km_n = d[1].length
+
+		return {
+			month: i+1,
+			month_cz: d[1][0].month_cz,
+			mean: km_mean,
+			ci_low: km_mean - 1.96*km_sd/Math.sqrt(km_n),
+			ci_high: km_mean + 1.96*km_sd/Math.sqrt(km_n)
+		}
 	})
 
 	// Add X axis --> it is a date format
@@ -242,32 +255,45 @@ updateTraceplotYearly = (rows) => {
 
 	function redrawLines () {
 		// Force D3 to recalculate and update the line
-		svg.selectAll('.line')
-			.attr("d",
-				d3.line()
-					.x(d => xScale(d.month))
-					.y(d => yScale(d.km))
+		svg.selectAll('.ma_ci')
+			.attr("d", d3.area()
+				.x(d => xScale(d.month))
+				.y0(d => yScale(d.ci_low))
+				.y1(d => yScale(d.ci_high))
 			)
 		svg.selectAll('.ma')
 			.attr("d",
 				d3.line()
 					.x(d => xScale(d.month))
-					.y(d => yScale(d.km))
+					.y(d => yScale(d.mean))
 			)
+		svg.selectAll('.line')
+		.attr("d",
+			d3.line()
+				.x(d => xScale(d.month))
+				.y(d => yScale(d.km))
+		)
 		xAxis.ticks(Math.max(width/75, 2))
 		yAxis.ticks(Math.max(height/50, 2))
 	}
 
+	// Add moving average
+	svg.append("path")
+		.attr("class", "ma_ci")
+		.datum(ci_ma5y)
+		.attr("fill", "orange")
+		.style("opacity", 0.3)
+		.attr("stroke", "none")
+	svg.append("path")
+		.attr("class", "ma")
+    	.datum(ci_ma5y)
+    	.attr("fill", "none")
+    	.attr("stroke", "orange")
+    	.attr("stroke-width", 1.5)
 	// Add the line
 	svg.append("path")
 		.attr("class", "line")
     	.datum(rows_year)
-    	.attr("fill", "none")
-    	.attr("stroke", "steelblue")
-    	.attr("stroke-width", 1.5)
-	svg.append("ma")
-		.attr("class", "line")
-    	.datum(mean_ma5y)
     	.attr("fill", "none")
     	.attr("stroke", "steelblue")
     	.attr("stroke-width", 1.5)
@@ -278,18 +304,29 @@ updateTraceplotYearly = (rows) => {
 	var bisect = (data, xp) => {
 		let month_int = Math.round(xp)
 		if (month_int < 1) month_int = 1
-		else if(month_int > data.length) month_int = data.length
+		else if(month_int > data.length) month_int = 0
 		return month_int - 1
 	}
-	// Create the circle that travels along the curve of chart
+	// Create the circles that travel along the curves of chart
 	var focus = svg.append('g')
 		.append('circle')
 			.style("fill", "steelblue")
 			.attr("stroke", "none")
 			.attr('r', 6)
 			.style("opacity", 0)
+	var focus_ma = svg.append('g')
+		.append('circle')
+			.style("fill", "orange")
+			.attr("stroke", "none")
+			.attr('r', 6)
+			.style("opacity", 0)
 	// Create the text that travels along the curve of chart
 	var focusText = svg.append('g')
+		.append('text')
+			.style("opacity", 0)
+			.attr("text-anchor", "top")
+			.attr("alignment-baseline", "center")
+	var focusText_ma = svg.append('g')
 		.append('text')
 			.style("opacity", 0)
 			.attr("text-anchor", "top")
@@ -337,29 +374,51 @@ updateTraceplotYearly = (rows) => {
 	// What happens when the mouse move -> show the annotations at the right positions.
 	function mouseover () {
 		focus.style("opacity", 1)
-		focusText.style("opacity",1)
+		focus_ma.style("opacity", 1)
+		focusText.style("opacity", 1)
+		focusText_ma.style("opacity", 1)
 		yearText.style("opacity",1)
 	}
 	function mousemove (event) {
 		// recover coordinate we need
 		let x0 = xScale.invert(d3.pointer(event, g.node())[0]);
 		let i = bisect(rows_year, x0);
-		selectedData = rows_year[i]
-		focus
-			.attr("cx", xScale(selectedData.month))
-			.attr("cy", yScale(selectedData.km))
-		focusText
-			.html(selectedData.km.toFixed(0))
-			.attr("x", xScale(selectedData.month) + 5)
-			.attr("y", yScale(selectedData.km))
+		let j = bisect(ci_ma5y, x0);
+
+		selectedMa = ci_ma5y[j]
+		if(i >= 0) {
+			focus.style("opacity", 1)
+			focusText.style("opacity", 1)
+			selectedData = rows_year[i]
+			focus
+				.attr("cx", xScale(selectedData.month))
+				.attr("cy", yScale(selectedData.km))
+			focusText
+				.html(selectedData.km.toFixed(0))
+				.attr("x", xScale(selectedData.month) + 5)
+				.attr("y", yScale(selectedData.km))
+		} else {
+			focus.style("opacity", 0)
+			focusText.style("opacity", 0)
+		}
+		focus_ma
+			.attr("cx", xScale(selectedMa.month))
+			.attr("cy", yScale(selectedMa.mean))
+		focusText_ma
+			.html(selectedMa.mean.toFixed(0))
+			.attr("x", xScale(selectedMa.month) + 5)
+			.attr("y", yScale(selectedMa.mean))
+
 		yearText
-			.html(selectedData.month_cz)
+			.html(selectedMa.month_cz)
 			.attr("x", 12)
 			.attr("y", yScale(maxKm-200))
 	}
 	function mouseout () {
 		focus.style("opacity", 0)
+		focus_ma.style("opacity", 0)
 		focusText.style("opacity", 0)
+		focusText_ma.style("opacity", 0)
 		yearText.style("opacity", 0)
 	}
 
