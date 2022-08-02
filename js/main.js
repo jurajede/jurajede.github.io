@@ -1,19 +1,38 @@
 
 var tabulate = function (row, columns) {
-	// var table = d3.select('table#data')
-	// var thead = table.append('thead')
-	var tbody = d3.select('#data-table-body')
-	var rows = tbody.append('tr')
+	let table = d3.select('div#data-table')
+		.append("table")
+		.attr("class", "table table-hover table-sm")
+	// header
+	let header = table.append("thead")
+		.attr("class", "thead-dark")
+		.append("tr")
+	header.append("th")
+		.attr("scope", "col")
+		.text("#")
+	header.append("th")
+		.attr("scope", "col")
+		.text("Měsíc")
+	header.append("th")
+		.attr("scope", "col")
+		.text("Ujeté kilometry")
+	header.append("th")
+		.attr("scope", "col")
+		.text("Aktivní dny")
 
-	rows.append('th')
-		.attr('scope', 'row')
-		.text(row.id)
-
-	var items = rows.selectAll('td')
-		.data(columns.map(function(column) { return row[column]; }))
-		.enter()
-		.append('td')
-		.text(function (d) { return d; })
+	// // body
+	// let tbody = table.append("tbody")
+	// 	.attr("id", "data-table-body")
+	// 	.attr("class", "text-left")
+	// let rows = tbody.append('tr')
+	// rows.append('th')
+	// 	.attr('scope', 'row')
+	// 	.text(row.id)
+	// rows.selectAll('td')
+	// 	.data(columns.map(function(column) { return row[column]; }))
+	// 	.enter()
+	// 	.append('td')
+	// 	.text(function (d) { return d; })
 
 }
 
@@ -111,23 +130,27 @@ function updateIndicators(data, window) {
 	}
 	d3.selectAll('.year-distance-km-delta')
 		.text(
+			"(" +
 			getSign(sum_distance_year, sum_distance_ma5) +
-			getDelta(sum_distance_year, sum_distance_ma5).toFixed(1) + "%"
+			getDelta(sum_distance_year, sum_distance_ma5).toFixed(1) + "%)"
 		)
 	d3.selectAll('.year-active-day-mean-delta')
 		.text(
+			"(" +
 			getSign(year_active_day_mean, active_day_mean_ma5) +
-			getDelta(year_active_day_mean, active_day_mean_ma5).toFixed(1) + "%"
+			getDelta(year_active_day_mean, active_day_mean_ma5).toFixed(1) + "%)"
 		)
 	d3.selectAll('.year-active-days-delta')
 		.text(
+			"(" +
 			getSign(year_active_days, active_days_ma5) +
-			getDelta(year_active_days, active_days_ma5).toFixed(1) + "%"
+			getDelta(year_active_days, active_days_ma5).toFixed(1) + "%)"
 		)
 	d3.selectAll('.year-daily-mean-delta')
 		.text(
+			"(" +
 			getSign(year_daily_mean, daily_mean_ma5) +
-			getDelta(year_daily_mean, daily_mean_ma5).toFixed(1) + "%"
+			getDelta(year_daily_mean, daily_mean_ma5).toFixed(1) + "%)"
 		)
 
 	//console.log(year_daily_mean, daily_mean_ma5, sum_distance_ma5, days_5)
