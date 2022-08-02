@@ -51,7 +51,6 @@ function updateIndicators(data, window) {
 	// sum distance
 	let sum_distance = d3.sum(data.map((d) => d['km']))
 	let sum_days = d3.sum(data.map((d) => d['days']))
-	let last_row = data[data.length-1]
 	let sum_distance_km = sum_distance.toFixed(1)
 	let sum_distance_eq = (sum_distance / 40075).toFixed(5)
 	let sum_active_days = (sum_days).toString()
@@ -64,6 +63,7 @@ function updateIndicators(data, window) {
 		.text(sum_active_days)
 
 	// last year
+	let last_row = data[data.length-1]
 	let sum_distance_year = data.reduce(
 		(acc, item) => (item.year == last_row.year) ? acc+item.km : acc,
 		0
@@ -77,15 +77,60 @@ function updateIndicators(data, window) {
 		0
 	)
 	let year_daily_mean = (sum_distance_year / year_days).toFixed(1)
+	let year_active_day_mean = (sum_distance_year / year_active_days).toFixed(1)
+
 	d3.selectAll('.year-distance-km')
 		.text(sum_distance_year + " km")
+	d3.selectAll('.year-active-day-mean')
+		.text(year_active_day_mean + " km/den")
 	d3.selectAll('.year-daily-mean')
 		.text(year_daily_mean + " km/den")
 	d3.selectAll('.year-active-days')
 		.text(year_active_days)
 
 	// 5-year moving average
+	let last_5 = data.filter(d => (d.year >= last_row.year-5) && (d.year < last_row.year) && (d.month <= last_row.month))
+	let days_5 = last_5.reduce((acc, item) => acc+item.month_days, 0)
+	let years_5 = last_5.length / last_row.month
+	let sum_distance_5 = last_5.reduce((acc, item) => acc+item.km, 0)
+	let sum_active_days_5 = last_5.reduce((acc, item) => acc+item.days, 0)
+	let sum_distance_ma5 = sum_distance_5 / years_5
+	let active_days_ma5 = sum_active_days_5 / years_5
+	let daily_mean_ma5 = sum_distance_5 / days_5
+	let active_day_mean_ma5 = sum_distance_5 / sum_active_days_5
 
+	getSign = (v1, v2) => {
+		if(v1 > v2) return "^ "
+		else if(v1 < v2) return "v "
+		else return ""
+	}
+	getDelta = (v1, v2) => {
+		if(v1 > v2) return 100*(Math.abs(v1/v2) - 1)
+		else if(v1 < v2) return 100*(1 - Math.abs(v1/v2))
+		else return 0
+	}
+	d3.selectAll('.year-distance-km-delta')
+		.text(
+			getSign(sum_distance_year, sum_distance_ma5) +
+			getDelta(sum_distance_year, sum_distance_ma5).toFixed(1) + "%"
+		)
+	d3.selectAll('.year-active-day-mean-delta')
+		.text(
+			getSign(year_active_day_mean, active_day_mean_ma5) +
+			getDelta(year_active_day_mean, active_day_mean_ma5).toFixed(1) + "%"
+		)
+	d3.selectAll('.year-active-days-delta')
+		.text(
+			getSign(year_active_days, active_days_ma5) +
+			getDelta(year_active_days, active_days_ma5).toFixed(1) + "%"
+		)
+	d3.selectAll('.year-daily-mean-delta')
+		.text(
+			getSign(year_daily_mean, daily_mean_ma5) +
+			getDelta(year_daily_mean, daily_mean_ma5).toFixed(1) + "%"
+		)
+
+	//console.log(year_daily_mean, daily_mean_ma5, sum_distance_ma5, days_5)
 }
 
 updateLastData = (data) => {

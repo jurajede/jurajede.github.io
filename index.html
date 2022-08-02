@@ -58,7 +58,7 @@
 			</div>
 			<div class="row justify-content-center">
 				<div class="col-auto mb-4">
-					<div class="card" style="width: 18rem;" data-toggle="tooltip" data-placement="bottom" title="Celková ujetá vzdálenost v kilometrech">
+					<div class="card" style="width: 15rem;" data-toggle="tooltip" data-placement="bottom" title="Celková ujetá vzdálenost v kilometrech">
 						<div class="card-body">
 							<h5 class="card-title">Vzdálenost</h5>
 							<p class="card-text"><span class="sum-distance-km"></span></p>
@@ -66,7 +66,7 @@
 					</div>
 				</div>
 				<div class="col-auto mb-4">
-					<div class="card" style="width: 18rem;" data-toggle="tooltip" data-placement="bottom" data-html="true" title="Počet dokola obkroužených rovníků<sup>1</sup>">
+					<div class="card" style="width: 15rem;" data-toggle="tooltip" data-placement="bottom" data-html="true" title="Počet dokola obkroužených rovníků<sup>1</sup>">
 						<div class="card-body">
 							<h5 class="card-title">Kolem rovníku</h5>
 							<p class="card-text"><span class="sum-distance-equators"></span></p>
@@ -74,7 +74,7 @@
 					</div>
 				</div>
 				<div class="col-auto mb-4">
-					<div class="card" style="width: 18rem;" data-toggle="tooltip" data-placement="bottom" title="Celkový počet aktivních dní, kdy Jura sedl na kolo">
+					<div class="card" style="width: 15rem;" data-toggle="tooltip" data-placement="bottom" title="Celkový počet aktivních dní, kdy Jura sedl na kolo">
 						<div class="card-body">
 							<h5 class="card-title">Aktivních dní</h5>
 							<p class="card-text"><span class="sum-active-days"></span></p>
@@ -106,26 +106,38 @@
 
 			<div class="row justify-content-center">
 				<div class="col-auto mb-4">
-					<div class="card" style="width: 18rem;" data-toggle="tooltip" data-placement="bottom" title="Celková ujetá vzdálenost (od začátku roku)">
+					<div class="card" style="width: 15rem;" data-toggle="tooltip" data-placement="bottom" title="Celková ujetá vzdálenost (od začátku roku)">
 						<div class="card-body">
 							<h5 class="card-title">Vzdálenost</h5>
-							<p class="card-text"><span class="year-distance-km"></span> (v 1.2%)</p>
+							<p class="card-text"><span class="year-distance-km"></span>
+								(<span class="year-distance-km-delta"></span>)</p>
 						</div>
 					</div>
 				</div>
 				<div class="col-auto mb-4">
-					<div class="card" style="width: 18rem;" data-toggle="tooltip" data-placement="bottom" title="Průměrná denní vzdálenost (od začátku roku)">
+					<div class="card" style="width: 15rem;" data-toggle="tooltip" data-placement="bottom" title="Průměrná vzdálenost na jeden aktivní den (od začátku roku)">
 						<div class="card-body">
-							<h5 class="card-title">Denní průměr</h5>
-							<p class="card-text"><span class="year-daily-mean"></span> (v 1.2%)</p>
+							<h5 class="card-title">Průměr za aktivní dny</h5>
+							<p class="card-text"><span class="year-active-day-mean"></span>
+								(<span class="year-active-day-mean-delta"></span>)</p>
 						</div>
 					</div>
 				</div>
 				<div class="col-auto mb-4">
-					<div class="card" style="width: 18rem;" data-toggle="tooltip" data-placement="bottom" title="Počet dní, kdy Jura sedl na kolo (od začátku roku)">
+					<div class="card" style="width: 15rem;" data-toggle="tooltip" data-placement="bottom" title="Počet dní, kdy Jura sedl na kolo (od začátku roku)">
 						<div class="card-body">
 							<h5 class="card-title">Aktivní dny</h5>
-							<p class="card-text"><span class="year-active-days"></span> (^ 1%)</p>
+							<p class="card-text"><span class="year-active-days"></span>
+								(<span class="year-active-days-delta"></span>)</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-auto mb-4">
+					<div class="card" style="width: 15rem;" data-toggle="tooltip" data-placement="bottom" title="Denní průměrná vzdálenost (od začátku roku)">
+						<div class="card-body">
+							<h5 class="card-title">Denní průměr</h5>
+							<p class="card-text"><span class="year-daily-mean"></span>
+								(<span class="year-daily-mean-delta"></span>)</p>
 						</div>
 					</div>
 				</div>
@@ -184,7 +196,8 @@
 				<div class="row">
 					<div class="col-md-12 mb-4">
 						<b>Poslední data:</b> <span class="last-data">Červenec 2022</span><br/>
-						<b>Design:</b> Martin Beneš, 2022
+						<b>Design:</b> <a href="https://github.com/martinbenes1996">Martin Beneš</a>, 2022<br/>
+						<b>Repozitář:</b> <a href="https://github.com/jurajede/jurajede.github.io">Github</a>
 					</div>
 				</div>
 
