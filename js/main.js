@@ -57,7 +57,7 @@ processRow = (row) => {
 
 updateIndicators = (data, window) => {
 	// sum distance
-	let sum_distance = d3.sum(data.map(d => d['km'])) + 8326
+	let sum_distance = d3.sum(data.map(d => d['km'])) + 8326 + 662
 	let sum_days = d3.sum(data.map(d => d['days']))
 	let sum_distance_km = sum_distance.toFixed(0)
 	let sum_distance_eq = (sum_distance / 40075).toFixed(5)
