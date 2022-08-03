@@ -57,7 +57,7 @@ processRow = (row) => {
 
 updateIndicators = (data, window) => {
 	// sum distance
-	let sum_distance = d3.sum(data.map(d => d['km']))
+	let sum_distance = d3.sum(data.map(d => d['km'])) + 8326
 	let sum_days = d3.sum(data.map(d => d['days']))
 	let sum_distance_km = sum_distance.toFixed(1)
 	let sum_distance_eq = (sum_distance / 40075).toFixed(5)
@@ -158,7 +158,7 @@ updateData = (rows) => {
 	updateTable(rows, ['month_cz_year', 'km', 'days'])
 	$('table#data-table').DataTable( {
 		//responsive: true,
-		"pageLength": 10,
+		"pageLength": 12,
 		searching: false,
 		//paging: false,
 		//info: false
