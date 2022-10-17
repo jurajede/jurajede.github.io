@@ -187,7 +187,7 @@ updateData = (rows) => {
 	});
 
 	updateIndicators(rows)
-	updateTraceplotKm(rows)
+	updateBarchartKm(rows)
 	updateTraceplotYearly(rows)
 	updateHeatmap(rows)
 	updateLastData(rows)

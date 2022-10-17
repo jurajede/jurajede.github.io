@@ -1,4 +1,233 @@
 
+updateBarchartKm = (rows) => {
+	var plotDiv = d3.select("#barchart-km")
+	// Define margins
+	var margin = {top: 20, right: 40, bottom: 40, left: 60},
+	width = parseInt(plotDiv.style("width")) - margin.left - margin.right,
+	height = parseInt(plotDiv.style("height")) - margin.top - margin.bottom;
+	// Define svg canvas
+	var svg = plotDiv.append("svg")
+        	.attr("width", width + margin.left + margin.right)
+        	.attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+	// Parse data
+	rows = rows.map(row => {
+		row.date = d3.timeParse("%Y")(String(row.year))
+		return row
+	})
+	rows = d3.rollups(
+		rows,
+		v => d3.sum(v, d => d.km),
+		d => d.year
+	)
+	.map(([k,v]) => { return {year: k, km: v}; })
+	console.log(rows)
+
+	// Add X axis --> it is a date format
+    var xScale = (d3.scaleBand()
+    	.domain(rows.map(d => String(d.year)))
+    	.range([ 0, width ]));
+	var xAxis = d3.axisBottom(xScale);
+    svg.append("g")
+		.attr("class", "x axis")
+    	.attr("transform", "translate(0," + height + ")")
+    	.call(xAxis)
+		.selectAll("text")
+		  .attr("transform", "translate(-10,0)rotate(-45)")
+		  .style("text-anchor", "end");
+
+	// Add Y axis
+	var maxKm = d3.max(rows, d => d.km)
+    var yScale = (d3.scaleLinear()
+    	.domain([0, maxKm])
+    	.range([ height, 0 ]));
+	var yAxis = d3.axisLeft(yScale);
+
+	// Axes labels
+    svg.append("g")
+		.attr("class", "y axis")
+		.call(yAxis)
+	let mid_idx = Math.ceil(rows.length/2);
+	console.log(mid_idx)
+	let mid = rows[mid_idx];
+	console.log(mid)
+	let mid_x = xScale(String(mid.year));
+	// console.log(rows.length, )
+	// console.log(rows[Math.ceil(rows.length/2)].year)
+	console.log(mid_x)
+	var xlabel = svg.append('g')
+		.attr('transform',
+			  'translate(' +
+			  	xScale(String(rows[Math.ceil(rows.length/2)].year)) + ', ' +
+				yScale(-3600) +
+			  ')')
+	xlabel.append("text")
+		.style("text-anchor", "middle")
+		.style("font-size", ".7em")
+		.text("Měsíc a rok")
+	var ylabel = svg.append('g')
+		.attr('transform', 'translate(' + -50 + ', ' + yScale(12000) + ')')
+	ylabel.append("text")
+		.style("text-anchor", "middle")
+		.attr("transform", "rotate(-90)")
+		.style("font-size", ".7em")
+		.text("Ujeté kilometry")
+
+	// Bars
+	svg.selectAll("mybar")
+	.data(rows)
+	.enter()
+	.append("rect")
+		.attr("x", d => xScale(String(d.year)) + 2)
+		.attr("y", d => yScale(d.km))
+		.attr("width", xScale.bandwidth() - 4)
+		.attr("height", d => height - yScale(d.km))
+		.attr("fill", "steelblue")
+
+	return
+
+	redrawLine = () => {
+		// Force D3 to recalculate and update the line
+		svg.selectAll('.line')
+			.attr("d",
+				d3.line()
+					.x(d => xScale(d.key))
+					.y(d => yScale(d.value))
+			)
+		xAxis.ticks(Math.max(width/75, 2))
+		yAxis.ticks(Math.max(height/50, 2))
+	}
+
+	// Add the line
+	svg.append("path")
+		.attr("class", "line")
+    	.datum(rows)
+    	.attr("fill", "none")
+    	.attr("stroke", "steelblue")
+    	.attr("stroke-width", 1.5)
+
+	redrawLine()
+
+	// This allows to find the closest X index of the mouse:
+	var bisect = d3.bisector(d => d.key).left;
+	// Create the circle that travels along the curve of chart
+	var focus = svg
+		.append('g')
+		.append('circle')
+				.style("fill", "steelblue")
+				.attr("stroke", "none")
+				.attr('r', 6)
+				.style("opacity", 0)
+	// Create the text that travels along the curve of chart
+	var focusText = svg
+		.append('g')
+		.append('text')
+			.style("opacity", 0)
+			.style("font-size", ".7em")
+			.attr("text-anchor", "top")
+			.attr("alignment-baseline", "center")
+	// Create the text that stays on the top
+	var yearText = svg
+		.append('g')
+		.append('text')
+			.style("opacity", 0)
+			.style("font-size", ".7em")
+			.attr("text-anchor", "top")
+			.attr("alignment-baseline", "center")
+
+	function redrawLegend () {
+		// update legends
+		legend_icon1.attr("cx", width - 100)
+			.attr("cy", 20)
+		legend_text1.attr("x", width - 80)
+			.attr("cy", 20)
+	}
+
+	// Legend
+	let legend_icon1 = svg.append("circle")
+		.attr("cy", 20)
+		.attr("r", 6)
+		.style("fill", "steelblue")
+	let legend_text1 = svg.append("text")
+		.attr("y", 20)
+		.text("Ujeté kilometry")
+		.style("font-size", ".7em")
+		.attr("alignment-baseline","middle")
+	redrawLegend()
+
+	var rect = svg
+		.append('rect')
+		.style("fill", "none")
+		.style("pointer-events", "all")
+		.attr('width', width)
+		.attr('height', height)
+		.on('mouseover', mouseover)
+		.on('mousemove', mousemove)
+		.on('mouseout', mouseout);
+	var g = svg.append("g");
+
+	// Define responsive behavior
+	function resize() {
+		var width = parseInt(plotDiv.style("width")) - margin.left - margin.right,
+		height = parseInt(plotDiv.style("height")) - margin.top - margin.bottom;
+
+		// Update the scales
+		xScale.range([ 0, width ])
+		yScale.range([ height, 0 ])
+
+		// Update the axes
+		svg.select('.x.axis')
+			.attr("transform", "translate(0," + height + ")")
+			.call(xAxis);
+		svg.select('.y.axis')
+			.call(yAxis);
+
+		xlabel.attr('transform', 'translate(' + xScale(rows[Math.ceil(rows.length/2)].date) + ', ' + yScale(-400) + ')')
+
+		// redraw line
+		redrawLine()
+
+	};
+
+	// What happens when the mouse move -> show the annotations at the right positions.
+	function mouseover() {
+		focus.style("opacity", 1)
+		focusText.style("opacity",1)
+		yearText.style("opacity",1)
+	}
+	function mousemove (event) {
+		// recover coordinate we need
+		let x0 = xScale.invert(d3.pointer(event, g.node())[0]);
+		let i = bisect(rows, x0, 1);
+		selectedData = rows[i]
+		focus
+			.attr("cx", xScale(selectedData.date))
+			.attr("cy", yScale(selectedData.km))
+		focusText
+			.html(selectedData.km.toFixed(0))
+			.attr("x", xScale(selectedData.date) + 5)
+			.attr("y", yScale(selectedData.km))
+		yearText
+			.html(selectedData.month_cz + " " + selectedData.year)
+			.attr("x", 12)
+			.attr("y", yScale(maxKm-200))
+	}
+	function mouseout () {
+		focus.style("opacity", 0)
+		focusText.style("opacity", 0)
+		yearText.style("opacity", 0)
+	}
+
+	// Call the resize function whenever a resize event occurs
+	d3.select(window).on('resize', resize);
+
+	// Call the resize function
+	resize();
+
+}
+
 updateTraceplotKm = (rows) => {
 	var plotDiv = d3.select("#traceplot-km")
 	// Define margins

@@ -87,7 +87,7 @@
 
 			<div class="row">
 				<div class="col-12 mb-4">
-					<div id="traceplot-km" class="plotDiv"></div>
+					<div id="barchart-km" class="plotDiv"></div>
 			  	</div>
 			</div>
 			<div class="row">
@@ -251,8 +251,8 @@
 			trail: 40, // Afterglow percentage
 			className: 'spinner', // The CSS class to assign to the spinner
 		};
-		var spinner_traceplot_km = new Spinner(opts).spin(
-			document.getElementById("traceplot-km")
+		var spinner_barchart_km = new Spinner(opts).spin(
+			document.getElementById("barchart-km")
 		);
 		var spinner_traceplot_yearly = new Spinner(opts).spin(
 			document.getElementById("traceplot-yearly")
@@ -272,7 +272,7 @@
 			},
 		).then(rows => {
 			spinner_table.stop()
-			spinner_traceplot_km.stop()
+			spinner_barchart_km.stop()
 			spinner_traceplot_yearly.stop()
 			updateData(rows)
 		})
