@@ -2,7 +2,7 @@
 updateBarchartKm = (rows) => {
 	var plotDiv = d3.select("#barchart-km")
 	// Define margins
-	var margin = {top: 20, right: 40, bottom: 40, left: 60},
+	var margin = {top: 20, right: 40, bottom: 80, left: 60},
 	width = parseInt(plotDiv.style("width")) - margin.left - margin.right,
 	height = parseInt(plotDiv.style("height")) - margin.top - margin.bottom;
 	// Define svg canvas
@@ -20,16 +20,18 @@ updateBarchartKm = (rows) => {
 	rows = d3.rollups(
 		rows,
 		v => d3.sum(v, d => d.km),
-		d => d.year
+		d => d.date
 	)
-	.map(([k,v]) => { return {year: k, km: v}; })
+		.map(([k,v]) => { return {date: k, km: v}; })
 	console.log(rows)
 
 	// Add X axis --> it is a date format
-    var xScale = (d3.scaleBand()
-    	.domain(rows.map(d => String(d.year)))
+    var xScale = (d3.scaleLinear()
+    	// .domain(rows.map(d => String(d.year)))
+		.domain(d3.extent(rows, d => d.date))
     	.range([ 0, width ]));
-	var xAxis = d3.axisBottom(xScale);
+	var xAxis = d3.axisBottom(xScale)
+		.tickFormat(d3.timeFormat("%Y"));
     svg.append("g")
 		.attr("class", "x axis")
     	.attr("transform", "translate(0," + height + ")")
@@ -44,23 +46,23 @@ updateBarchartKm = (rows) => {
     	.domain([0, maxKm])
     	.range([ height, 0 ]));
 	var yAxis = d3.axisLeft(yScale);
+	svg.append("g")
+		.attr("class", "y axis yaxis")
+		.call(yAxis)
 
 	// Axes labels
-    svg.append("g")
-		.attr("class", "y axis")
-		.call(yAxis)
 	let mid_idx = Math.ceil(rows.length/2);
 	console.log(mid_idx)
 	let mid = rows[mid_idx];
 	console.log(mid)
-	let mid_x = xScale(String(mid.year));
+	let mid_x = xScale(mid.date);
 	// console.log(rows.length, )
 	// console.log(rows[Math.ceil(rows.length/2)].year)
 	console.log(mid_x)
 	var xlabel = svg.append('g')
 		.attr('transform',
 			  'translate(' +
-			  	xScale(String(rows[Math.ceil(rows.length/2)].year)) + ', ' +
+			  	xScale(rows[Math.ceil(rows.length/2)].date) + ', ' +
 				yScale(-3600) +
 			  ')')
 	xlabel.append("text")
@@ -76,15 +78,18 @@ updateBarchartKm = (rows) => {
 		.text("Ujeté kilometry")
 
 	// Bars
-	svg.selectAll("mybar")
-	.data(rows)
-	.enter()
-	.append("rect")
-		.attr("x", d => xScale(String(d.year)) + 2)
-		.attr("y", d => yScale(d.km))
-		.attr("width", xScale.bandwidth() - 4)
-		.attr("height", d => height - yScale(d.km))
-		.attr("fill", "steelblue")
+	let bar_width = Math.round(width / rows.length);
+	const spacing = 0.05 * bar_width;
+	let left_offset = Math.round((width - bar_width*rows.length)/2);
+	svg.selectAll("svg")
+		.data(rows)
+		.enter()
+		.append("rect")
+			.attr("x", (d, i) => left_offset + bar_width * i)
+			.attr("y", d => yScale(d.km))
+			.attr("width", bar_width - spacing)
+			.attr("height", d => height - yScale(d.km))
+			.attr("fill", "steelblue")
 
 	return
 
