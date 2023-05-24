@@ -60,7 +60,7 @@ updateBarchartKm = (rows) => {
 	xlabel.append("text")
 		.style("text-anchor", "middle")
 		.style("font-size", ".7em")
-		.text("Měsíc a rok")
+		.text("Rok")
 	let ylabel = svg.append('g')
 		.attr('transform', 'translate(' + -50 + ', ' + yScale(12000) + ')')
 	ylabel.append("text")
