@@ -108,8 +108,8 @@ updateIndicators = (data, window) => {
 	let active_day_mean_ma5 = sum_distance_5 / sum_active_days_5
 
 	getSign = (v1, v2) => {
-		if(v1 > v2) return "^ "
-		else if(v1 < v2) return "v "
+		if(v1 > v2) return "&#x25B2; "
+		else if(v1 < v2) return "&#x25BC; "
 		else return ""
 	}
 	getDelta = (v1, v2) => {
