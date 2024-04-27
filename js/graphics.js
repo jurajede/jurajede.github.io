@@ -119,6 +119,7 @@ updateBarchartKm = (rows) => {
 		.attr('height', height)
 		.on('mouseover', mouseover)
 		.on('mousemove', mousemove)
+		.on('click', () => {})
 		.on('mouseout', mouseout);
 	var g = svg.append("g");
 
@@ -588,6 +589,7 @@ updateTraceplotYearly = (rows) => {
 		.attr('height', height)
 		.on('mouseover', mouseover)
 		.on('mousemove', mousemove)
+		.on('click', () => {})
 		.on('mouseout', mouseout);
 	var g = svg.append("g");
 
@@ -794,6 +796,7 @@ updateHeatmap = (rows) => {
 		.attr('height', height)
 		.on('mouseover', mouseover)
 		.on('mousemove', mousemove)
+		.on('click', () => {})
 		.on('mouseout', mouseout);
 
 	var g = svg.append("g");
