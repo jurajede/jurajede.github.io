@@ -4,7 +4,7 @@ df = pd.read_csv('data.tsv', sep='\t')
 
 #
 df = df.groupby(['year']).agg({'km': 'sum'})
-df.loc[1992, 'km'] += 8326  # - 606
+df.loc[1992, 'km'] += 8326
 df['km'] = df['km'].cumsum().round().astype('int')
 print(df)
 
